@@ -1,0 +1,48 @@
+name: FastAPI CI/CD
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      # 1) GitHub 레포의 현재 코드 가져오기
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      # 2) FastAPI 프로젝트 파일들을 퍼블릭 서버로 복사
+      # 스프링부트처럼 JAR를 빌드해서 보내는 게 아니라,
+      # 파이썬 소스코드 파일들을 그대로 보내는 방식입니다.
+      - name: Copy Files to Public Server
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.PUBLIC_HOST }}
+          username: root
+          key: ${{ secrets.PRIVATE_SSH_KEY }}
+
+          # FastAPI 실행에 필요한 파일들만 전송
+          # .env는 gitignore 대상이므로 여기 포함하지 않습니다.
+          source: "main.py,chatbot_module.py,vision_module.py,quiz_module.py,config.py,database.py,requirements.txt,deploy_private.sh"
+
+          # 퍼블릭 서버에 임시로 받아둘 위치
+          target: "/root/recyq-ai-api"
+
+          # 현재 프로젝트 루트 기준 그대로 복사
+          strip_components: 0
+
+      # 3) 퍼블릭 서버에서 배포 스크립트 실행
+      # 이 스크립트가 다시 AI 서버로 접속해서 실제 배포를 수행합니다.
+      - name: Execute deploy_private.sh on Public Server
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.PUBLIC_HOST }}
+          username: root
+          key: ${{ secrets.PRIVATE_SSH_KEY }}
+          script: |
+            chmod +x /root/recyq-ai-api/deploy_private.sh
+            /root/recyq-ai-api/deploy_private.sh
