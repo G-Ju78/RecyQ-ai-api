@@ -23,7 +23,7 @@ class ChatRequest(BaseModel):
 # [API 1] AI 환경 컨설턴트 챗봇 엔드포인트 (🌟 새로 추가됨)
 # 자바의 ChatbotController가 이 주소로 질문을 던지고 답변을 기다립니다.
 # ==========================================================================
-@app.post("/api/chatbot")
+@app.post("/recyq/api/chatbot")
 async def chatbot_endpoint(request: ChatRequest):
     try:
         # 1. 자바에서 넘어온 사용자의 질문을 꺼냅니다.
@@ -47,7 +47,7 @@ async def chatbot_endpoint(request: ChatRequest):
 # ==========================================================================
 # [API 2] 비전 AI 쓰레기 스캔 및 GPS 검증 (기존 코드)
 # ==========================================================================
-@app.post("/api/scan")
+@app.post("/recyq/api/scan")
 async def scan(
     lat: float = Form(...), 
     lon: float = Form(...), 
@@ -91,7 +91,7 @@ async def scan(
 # [API 3] 일일 OX 퀴즈 생성 (기존 코드)
 # 추후 자바의 QuizController가 이 주소를 호출하여 3문제를 가져갑니다.
 # ==========================================================================
-@app.get("/api/quiz")
+@app.get("/recyq/api/quiz")
 async def get_quiz():
     # 🌟 괄호 안에 숫자 0을 넣어주세요! (임시로 횟수 0을 넘겨주어 에러 방지)
     return generate_random_quiz(0)
