@@ -70,7 +70,7 @@ def generate_random_quiz(user_daily_count=0, lang="ko"):
     except Exception as e:
         print("🚨 퀴즈 생성 에러:", e)
         # 에러 시 서버가 죽지 않도록 빈 배열 반환
-        return []
+        return [{"error": str(e)}]
 
 # 💡 하단의 calculate_quiz_reward 함수는 이제 자바(QuizController)가 
 # 포인트 로직을 담당하므로 완전히 삭제하셔도 무방합니다.
